@@ -189,99 +189,6 @@ class VisualGridHuntGame:
     def is_done(self) -> bool:
         return len(self.food_positions) == 0 or self.steps >= 60 or self.collision
 
-class ModelBasedAgent:
-    """Model-Based Agent with internal memory."""
-
-    def __init__(self):
-        # Internal memory
-        self.visited_cells = {(0, 0)}
-
-        self.x = 0
-        self.y = 0
-
-        # Current facing direction
-        self.facing = "Up"
-
-        # Remember previous percept and action
-        self.last_percept = None
-        self.last_action = None
-    def get_next_position(self):
-        """Calculate the cell directly ahead."""
-
-        next_x = self.x
-        next_y = self.y
-
-        if self.facing == "Up":
-            next_y += 1
-        elif self.facing == "Down":
-            next_y -= 1
-        elif self.facing == "Left":
-            next_x -= 1
-        elif self.facing == "Right":
-            next_x += 1
-
-        return (next_x, next_y)
-    def turn_left(self):
-        directions = ["Up", "Left", "Down", "Right"]
-        index = directions.index(self.facing)
-        self.facing = directions[(index + 1) % 4]
-
-    def turn_right(self):
-        directions = ["Up", "Right", "Down", "Left"]
-        index = directions.index(self.facing)
-        self.facing = directions[(index + 1) % 4]
-
-
-    def sense_and_act(self, percept):
-
-        self.last_percept = percept
-
-        current_position = (self.x, self.y)
-
-        # Remember current cell
-        self.visited_cells.add(current_position)
-
-        # IF food_here THEN Suck
-        # -------------------------------
-        if percept["food_here"]:
-            action = "Suck"
-
-        else:
-
-            # Find cell in front of the agent
-            next_cell = self.get_next_position()
-
-            if percept["wall_ahead"]:
-
-                self.turn_right()
-                action = "Right"
-
-            elif next_cell in self.visited_cells:
-
-                self.turn_right()
-                action = "Right"
-
-            else:
-
-                action = "Forward"
-
-                # Update internal position
-                if self.facing == "Up":
-                    self.y += 1
-                elif self.facing == "Down":
-                    self.y -= 1
-                elif self.facing == "Left":
-                    self.x -= 1
-                elif self.facing == "Right":
-                    self.x += 1
-
-                # Remember new cell
-                self.visited_cells.add((self.x, self.y))   
-
-        # Remember last action
-        self.last_action = action
-
-        return action
 
 class GridGameGUI:
     """Tkinter wrapper that dynamically scales cell sizes to keep larger grids on screen."""
@@ -293,6 +200,7 @@ class GridGameGUI:
         self.env = VisualGridHuntGame(width=width, height=height, num_food=num_food, num_opponents=num_opponents,
                                       custom_walls=walls)
         self.agent = SearchAgent()
+        self.agent.active_algo = 'AStar'
 
         # Dynamically calculate cell size so the total canvas fits nicely within a 600x600 window ceiling
         max_canvas_dim = 600
