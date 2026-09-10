@@ -7,9 +7,9 @@ def run_grid_hunt():
     env = VisualGridHuntGame()
     agent = SearchAgent()
 
-    agent.active_algo = 'AStar'
+    agent.active_algo = 'BFS'
 
-    print("A* Search Agent Grid Hunt Started")
+    print("=== Search Agent Grid Hunt Started ===")
 
     while not env.is_done():
 
